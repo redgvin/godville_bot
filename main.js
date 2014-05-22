@@ -1,17 +1,8 @@
 var cfg = require('./config.js');
 var ws = require('./ws');
+var Http = require('./http');
 
 var request = require('request');
-
-var wsCallback = function(message){
-	console.log('received: %s', message);
-}
-
-var action = function(){
-	request.post(
-    'http://godville.net/fbh/feed',
-	
-}
 
 request.post(
     'http://godville.net/login/login',
@@ -31,6 +22,7 @@ request.post(
         	.headers['set-cookie']
         	.map(function(cookie){return cookie.split(';')[0];})
 			.join(';');
-		ws(cookies, wsCallback);
+		
+		ws(cookies,Http(cookies));
     }
 );
