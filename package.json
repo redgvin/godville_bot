@@ -4,5 +4,6 @@
   "description": "a sample node.js godvile-bot",
   "main": "main.js",
   "dependencies": {
+  	"ws":"*"
   }
 }

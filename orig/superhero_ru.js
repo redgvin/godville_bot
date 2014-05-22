@@ -8823,13 +8823,19 @@ WsClient.prototype.set_callbacks = function (a, b) {
 }, WsClient.prototype.connect = function () {
     wsClient.ws_conn_interval_id = setTimeout(wsClient.check_ws_connection, 14e3);
     var a;
-    "WebSocket" in window ? a = new WebSocket(wsClient.ws_url) : "MozWebSocket" in window && (a = new MozWebSocket(wsClient.ws_url)), a.onmessage = wsClient.on_message, a.onclose = wsClient.on_close, a.onerror = wsClient.on_close, a.onopen = wsClient.on_open;
+    "WebSocket" in window ? a = new WebSocket(wsClient.ws_url) : "MozWebSocket" in window && (a = new MozWebSocket(wsClient.ws_url)),
+    a.onmessage = wsClient.on_message,
+    a.onclose = wsClient.on_close,
+    a.onerror = wsClient.on_close,
+    a.onopen = wsClient.on_open;
     var b = [];
     b.proto = wsClient.transport_name, wsClient.packet_handler.notify_status.apply(wsClient.packet_handler, ["connecting", b])
 }, WsClient.prototype.date_rcv_timeout = function () {
     wsClient.on_close()
 }, WsClient.prototype.on_open = function () {
-    wsClient.ws_conn_interval_id != 0 && (window.clearTimeout(wsClient.ws_conn_interval_id), wsClient.ws_conn_interval_id = 0), wsClient.data_rcv_timeout = setTimeout(wsClient.date_rcv_timeout, 14e3), wsClient.ws_set_connected_status()
+    wsClient.ws_conn_interval_id != 0 && (window.clearTimeout(wsClient.ws_conn_interval_id),wsClient.ws_conn_interval_id = 0),
+    wsClient.data_rcv_timeout = setTimeout(wsClient.date_rcv_timeout, 14e3),
+    wsClient.ws_set_connected_status()
 }, WsClient.prototype.ws_set_connected_status = function () {
     if (typeof localStorage != "undefined") try {
         localStorage.setItem("ws_connected", "true")
@@ -8848,7 +8854,9 @@ WsClient.prototype.set_callbacks = function (a, b) {
         c.proto = wsClient.transport_name, wsClient.packet_handler.notify_status.apply(wsClient.packet_handler, ["failed", c]), wsClient.connection_failed(wsClient.transport_name)
     }
 }, WsClient.prototype.on_message = function (a) {
-    wsClient.error_cnt = 0, wsClient.data_rcv_timeout != 0 && (window.clearTimeout(wsClient.data_rcv_timeout), wsClient.data_rcv_timeout = 0), wsClient.packet_handler.on_data.apply(wsClient.packet_handler, [wsClient.transport_name, a.data])
+    wsClient.error_cnt = 0,
+    wsClient.data_rcv_timeout != 0 && (window.clearTimeout(wsClient.data_rcv_timeout), wsClient.data_rcv_timeout = 0),
+    wsClient.packet_handler.on_data.apply(wsClient.packet_handler, [wsClient.transport_name, a.data])
 }, WsClient.prototype.unload = function () {};
 var pollClient;
 PollClient.prototype.set_callbacks = function (a, b) {
@@ -8910,14 +8918,33 @@ var Hero = {
         gv_error(a + " transport failed"), Hero.current_transport == Hero.ws_client_ref ? (Hero.c_mode_enabled == !0 ? Hero.current_transport = Hero.orb_client_ref : Hero.current_transport = Hero.poll_client_ref, Hero.current_transport.connect()) : Hero.poll_client_ref && Hero.current_transport == Hero.orb_client_ref && (Hero.current_transport = Hero.poll_client_ref, Hero.current_transport.connect())
     },
     set_callbacks: function (a) {
-        this.ws_client_ref && this.ws_client_ref.set_callbacks(a, this.transport_failed), this.orb_client_ref && this.orb_client_ref.set_callbacks(a, this.transport_failed), this.poll_client_ref && this.poll_client_ref.set_callbacks(a, this.transport_failed)
+        this.ws_client_ref && this.ws_client_ref.set_callbacks(a, this.transport_failed),
+        this.orb_client_ref && this.orb_client_ref.set_callbacks(a, this.transport_failed),
+        this.poll_client_ref && this.poll_client_ref.set_callbacks(a, this.transport_failed)
     },
     connect: function () {
-        this.t_mode_enabled == !1 ? Hero.current_transport = Hero.poll_client_ref : "WebSocket" in window || "MozWebSocket" in window ? this.current_transport = this.ws_client_ref : this.current_transport = this.orb_client_ref, this.current_transport.connect(), onunload = function () {
-            wsClient.unload(), orbClient.unload()
+        if(this.t_mode_enabled == !1){
+            Hero.current_transport = Hero.poll_client_ref
+        }else{
+            if("WebSocket" in window || "MozWebSocket" in window){
+                this.current_transport = this.ws_client_ref
+            }else{
+                this.current_transport = this.orb_client_ref
+            }
+        }
+        this.current_transport.connect(),
+        onunload = function () {
+            wsClient.unload(),
+            orbClient.unload()
         }
     },
     init: function (a, b, c, d, e, f, g) {
-        b && (this.poll_client_ref = pollClient = new PollClient(b, f, g)), this.ws_client_ref = wsClient = new WsClient(e, a), this.orb_client_ref = orbClient = new OrbClient(a), c.is_turbo_mode_enabled && (this.t_mode_enabled = c.is_turbo_mode_enabled.call(c)), c.is_comet_mode_enabled ? this.c_mode_enabled = c.is_comet_mode_enabled.call(c) : this.c_mode_enabled = !0, Hero.set_callbacks(c), b ? this.poll_client_ref.single_fetch(this, Hero.connect) : Hero.connect()
+        b && (this.poll_client_ref = pollClient = new PollClient(b, f, g)),
+        this.ws_client_ref = wsClient = new WsClient(e, a),
+        this.orb_client_ref = orbClient = new OrbClient(a),
+        c.is_turbo_mode_enabled && (this.t_mode_enabled = c.is_turbo_mode_enabled.call(c)),
+        c.is_comet_mode_enabled ? this.c_mode_enabled = c.is_comet_mode_enabled.call(c) : this.c_mode_enabled = !0,
+        Hero.set_callbacks(c),
+        b ? this.poll_client_ref.single_fetch(this, Hero.connect) : Hero.connect()
     }
 }
