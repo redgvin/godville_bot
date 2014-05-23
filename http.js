@@ -104,20 +104,32 @@ module.exports = exports = function(cookies) {
 	};
 
 	get({a:get_cmd_id("m5S1KBfBxKhNWuu61EjC")},function(){
-		console.log(JSON.parse(arguments[1].body));
+		var state = JSON.parse(arguments[1].body);
 	});
 
-	post(
-		{
-			a:get_cmd_id('5JgMUahE1BYdtf7quoWz'),
-			b:prepare_args(JSON.stringify({action: "god_phrase",god_phrase: 'Use the force'}))
-		},
-		function(){
-			console.log(JSON.parse(arguments[1].body));
-		}
-	);
-
 	return function(message){
-		console.log('received: %s', message);
+		console.log('message');
+		try{
+			var match = message.match(/\d+({.*})/);
+			if(match && match[1]){
+				message = match[1];
+				message = JSON.parse(message);
+			}
+		}catch(e){
+			console.log('Error', e.message);
+		}
+		if(typeof message === 'object'){
+			if(message.hero.health < 500){
+				post(
+					{
+						a:get_cmd_id('5JgMUahE1BYdtf7quoWz'),
+						b:prepare_args(JSON.stringify({action: "god_phrase",god_phrase: 'Use the force'}))
+					},
+					function(){
+						console.log('Action response',JSON.parse(arguments[1].body));
+					}
+				);
+			}
+		}
 	}
 }
